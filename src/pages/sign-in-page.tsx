@@ -7,13 +7,32 @@ import gitHubLogo from "@/assets/github-mark.svg";
 import { useSignInWithOAuth } from "@/hooks/mutations/use-sign-in-with-oauth";
 import kakaoLogo from "@/assets/kakaotalk_sharing_btn_medium_ov.png";
 import googleLogo from "@/assets/google-logo.svg";
+import { toast } from "sonner";
+import { generateErrorMessage } from "@/lib/error";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { mutate: signInWithPassword } = useSignInWithPassword();
-  const { mutate: signInWithOAuth } = useSignInWithOAuth();
+  const { mutate: signInWithPassword, isPending: isSignInWithPasswordPending } =
+    useSignInWithPassword({
+      onError: (error) => {
+        const message = generateErrorMessage(error);
+        toast.error(message, {
+          position: "top-center",
+        });
+        setPassword("");
+      },
+    });
+  const { mutate: signInWithOAuth, isPending: isSignInWithOAuthPending } =
+    useSignInWithOAuth({
+      onError: (error) => {
+        const message = generateErrorMessage(error);
+        toast.error(message, {
+          position: "top-center",
+        });
+      },
+    });
 
   const handleSignInWithPasswordClick = () => {
     if (email.trim() === "") return;
@@ -36,11 +55,14 @@ export default function SignInPage() {
   const handleSignInWithKakaoClick = () => {
     signInWithOAuth("kakao");
   };
+
+  const isPending = isSignInWithOAuthPending || isSignInWithPasswordPending;
   return (
     <div className="flex flex-col gap-8">
       <div className="text-xl font-bold">로그인</div>
       <div className="flex flex-col gap-2">
         <Input
+          disabled={isPending}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="py-6"
@@ -48,6 +70,7 @@ export default function SignInPage() {
           placeholder="example@abc.com"
         />
         <Input
+          disabled={isPending}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="py-6"
@@ -56,18 +79,24 @@ export default function SignInPage() {
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Button onClick={handleSignInWithPasswordClick} className="w-full">
+        <Button
+          disabled={isPending}
+          onClick={handleSignInWithPasswordClick}
+          className="w-full"
+        >
           로그인
         </Button>
         <Button
+          disabled={isPending}
           onClick={handleSignInWithKakaoClick}
           className="w-full bg-[#FEE500] hover:bg-[#FEE800]"
           variant={"outline"}
         >
           <img className="h-4 w-4" src={kakaoLogo} />
-          kakao 계정으로 로그인
+          Kakao 계정으로 로그인
         </Button>
         <Button
+          disabled={isPending}
           onClick={handleSignInWithGoogleClick}
           className="w-full"
           variant={"outline"}
@@ -76,6 +105,7 @@ export default function SignInPage() {
           Google 계정으로 로그인
         </Button>
         <Button
+          disabled={isPending}
           onClick={handleSignInWithGitHubClick}
           className="w-full"
           variant={"outline"}
