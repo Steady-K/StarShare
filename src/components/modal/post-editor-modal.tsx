@@ -8,6 +8,10 @@ export default function PostEditorModal() {
   const { isOpen, close } = usePostEditorModal();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const handleCreatePostClick = () => {
+    if (content.trim() === "") return;
+  };
+
   const [content, setContent] = useState("");
 
   const handleCloseModal = () => {
