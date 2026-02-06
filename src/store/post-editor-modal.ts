@@ -6,16 +6,21 @@ const initialState = {
 };
 
 const usePostEditorModalStore = create(
-  combine(initialState, (set) => ({
-    actions: {
-      open: () => {
-        set({ isOpen: true });
+  devtools(
+    combine(initialState, (set) => ({
+      actions: {
+        open: () => {
+          set({ isOpen: true });
+        },
+        close: () => {
+          set({ isOpen: false });
+        },
       },
-      close: () => {
-        set({ isOpen: false });
-      },
+    })),
+    {
+      name: "PostEditorModalStore",
     },
-  })),
+  ),
 );
 
 export const useOpenPostEditorModal = () => {
