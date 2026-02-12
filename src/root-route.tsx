@@ -22,8 +22,8 @@ export default function RootRoute() {
 
         <Route element={<MemberOnlyLayout />}>
           <Route path="/" element={<IndexPage />} />
-          <Route path="/post:postId" element={<PostDetailPage />} />
-          <Route path="/profile:userId" element={<ProfileDetailPage />} />
+          <Route path="/post/:postId" element={<PostDetailPage />} />
+          <Route path="/profile/:userId" element={<ProfileDetailPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
 

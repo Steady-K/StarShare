@@ -13,6 +13,7 @@ export function useProfileData(userId?: string) {
     queryFn: async () => {
       try {
         const profile = await fetchProfile(userId!);
+        console.log(userId);
         return profile;
       } catch (error) {
         if (isMine && (error as PostgrestError).code === "PGRST116") {
