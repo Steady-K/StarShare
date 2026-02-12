@@ -1,6 +1,6 @@
 import { useOpenAlertModal } from "@/store/alert-modal";
 import { Button } from "../ui/button";
-import { useDeletePost } from "@/hooks/mutations/post/use- delete-post";
+import { useDeletePost } from "@/hooks/mutations/post/use-delete-post";
 import { toast } from "sonner";
 
 export default function DeletePostButton({ id }: { id: number }) {
