@@ -10,10 +10,9 @@ export const QUERY_KEYS = {
     userList: (userId: string) => ["post", "userList", userId],
     byId: (postId: number) => ["post", "byId", postId],
   },
-  commnet: {
+  comment: {
     all: ["comment"],
-    list: ["comment", "list"],
-    byId: (commnetId: number) => ["commnet", "byId", commnetId],
+    post: (postId: number) => ["commnet", "post", postId],
   },
 };
 
