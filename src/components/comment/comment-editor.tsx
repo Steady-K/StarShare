@@ -21,6 +21,7 @@ type ReplyMode = {
   type: "REPLY";
   postId: number;
   parentCommentId: number;
+  rootCommentId: number;
   onClose: () => void;
 };
 
@@ -73,6 +74,7 @@ export default function CommentEditor(props: Props) {
         postId: props.postId,
         content,
         parentCommentId: props.parentCommentId,
+        rootCommentId: props.rootCommentId,
       });
     } else {
       updateComment({
@@ -92,16 +94,15 @@ export default function CommentEditor(props: Props) {
         onChange={(e) => setContent(e.target.value)}
       />
       <div className="flex justify-end gap-2">
-        {props.type === "EDIT" ||
-          (props.type === "REPLY" && (
-            <Button
-              disabled={isPending}
-              variant={"outline"}
-              onClick={() => props.onClose()}
-            >
-              취소
-            </Button>
-          ))}
+        {(props.type === "EDIT" || props.type === "REPLY") && (
+          <Button
+            disabled={isPending}
+            variant={"outline"}
+            onClick={() => props.onClose()}
+          >
+            취소
+          </Button>
+        )}
         <Button disabled={isPending} onClick={handleSubmitClick}>
           작성
         </Button>
