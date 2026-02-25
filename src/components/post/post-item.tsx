@@ -16,6 +16,10 @@ import Loader from "../loader";
 import Fallback from "../fallback";
 import LikePostButton from "./like-post-button";
 import { Link } from "react-router";
+import PreviewImageModal from "../modal/preview-image-modal";
+import { useState } from "react";
+
+type Image = string | null;
 
 export default function PostItem({
   postId,
@@ -26,6 +30,8 @@ export default function PostItem({
 }) {
   const session = useSession();
   const userId = session?.user.id;
+
+  const [previewImageUrl, setPreviewImageUrl] = useState<Image>(null);
 
   const {
     data: post,
@@ -98,7 +104,12 @@ export default function PostItem({
                 <div className="overflow-hidden rounded-xl">
                   <img
                     src={url}
-                    className="h-full max-h-[350px] w-full object-cover"
+                    alt={`게시글 이미지 ${index + 1}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPreviewImageUrl(url);
+                    }}
+                    className="h-full max-h-[350px] w-full cursor-zoom-in object-cover"
                   />
                 </div>
               </CarouselItem>
@@ -125,6 +136,13 @@ export default function PostItem({
           </Link>
         )}
       </div>
+      <PreviewImageModal
+        open={!!previewImageUrl}
+        imageUrl={previewImageUrl}
+        onOpenChange={(open) => {
+          if (!open) setPreviewImageUrl(null);
+        }}
+      />
     </div>
   );
 }
