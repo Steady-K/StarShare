@@ -9,6 +9,7 @@ import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { useSession } from "@/store/session";
 import { useOpenAlertModal } from "@/store/alert-modal";
 import { useUpdatePost } from "@/hooks/mutations/post/use-update-post";
+import { parseTagsInput } from "@/lib/tags";
 
 type Image = {
   file: File;
@@ -44,6 +45,9 @@ export default function PostEditorModal() {
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<Image[]>([]);
+  const [tags, setTags] = useState("");
+
+  const parsedTags = parseTagsInput(tags);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,6 +88,7 @@ export default function PostEditorModal() {
         content,
         images: images.map((image) => image.file),
         userId: session!.user.id,
+        tags: parsedTags,
       });
     } else {
       if (content === postEditorModal.content) return;
@@ -143,6 +148,15 @@ export default function PostEditorModal() {
           className="max-h-125 min-h-25 focus:outline-none"
           placeholder="무슨 일이 있었나요?"
         />
+        <div className="flex items-center gap-2">
+          <div>태그 :</div>
+          <input
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="flex-1"
+            placeholder="은하수, 별궤적, 오리온자리 ..."
+          />
+        </div>
         <input
           onChange={handleSelectImages}
           ref={fileInputRef}
