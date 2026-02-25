@@ -1,6 +1,7 @@
 import supabase from "@/lib/supabase";
 import { deleteImages, uploadsImage } from "./image";
 import type { PostEntity } from "@/types";
+import { parseTagsInput } from "@/lib/tags";
 
 export async function fetchPosts({
   from,
@@ -52,11 +53,12 @@ export async function fetchPostById({
   };
 }
 
-export async function createPost(content: string) {
+export async function createPost(content: string, tags?: string[]) {
   const { data, error } = await supabase
     .from("post")
     .insert({
       content,
+      tags: tags ?? [],
     })
     .select()
     .single();
@@ -69,13 +71,15 @@ export async function createPostWithImages({
   content,
   images,
   userId,
+  tags,
 }: {
   content: string;
   images: File[];
   userId: string;
+  tags: string[];
 }) {
   // 1. 새로운 포스트 생성
-  const post = await createPost(content);
+  const post = await createPost(content, tags);
   if (images.length === 0) return post;
 
   const uploadedFilePaths: string[] = [];

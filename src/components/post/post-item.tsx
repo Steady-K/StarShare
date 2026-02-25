@@ -119,22 +119,28 @@ export default function PostItem({
       </div>
 
       {/* 3. 좋아요, 댓글 버튼 */}
-      <div className="flex gap-2">
-        {/* 3-1. 좋아요 버튼 */}
-        <LikePostButton
-          id={post.id}
-          likeCount={post.like_count}
-          isLiked={post.isLiked}
-        />
-        {/* 3-2. 댓글 버튼 */}
-        {type === "FEED" && (
-          <Link to={`/post/${post.id}`}>
-            <div className="hover:bg-muted flex cursor-pointer items-center gap-2 rounded-xl border-1 p-2 px-4 text-sm">
-              <MessageCircle className="h-4 w-4" />
-              <span>댓글 달기</span>
-            </div>
-          </Link>
-        )}
+      <div className="flex flex-col gap-4">
+        <div className="text-muted-foreground">
+          {post.tags?.map((tag) => ` #${tag}`)}
+        </div>
+
+        <div className="flex gap-2">
+          {/* 3-1. 좋아요 버튼 */}
+          <LikePostButton
+            id={post.id}
+            likeCount={post.like_count}
+            isLiked={post.isLiked}
+          />
+          {/* 3-2. 댓글 버튼 */}
+          {type === "FEED" && (
+            <Link to={`/post/${post.id}`}>
+              <div className="hover:bg-muted flex cursor-pointer items-center gap-2 rounded-xl border-1 p-2 px-4 text-sm">
+                <MessageCircle className="h-4 w-4" />
+                <span>댓글 달기</span>
+              </div>
+            </Link>
+          )}
+        </div>
       </div>
       <PreviewImageModal
         open={!!previewImageUrl}
