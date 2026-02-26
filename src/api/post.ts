@@ -1,18 +1,19 @@
 import supabase from "@/lib/supabase";
 import { deleteImages, uploadsImage } from "./image";
 import type { PostEntity } from "@/types";
-import { parseTagsInput } from "@/lib/tags";
 
 export async function fetchPosts({
   from,
   to,
   userId,
   authorId,
+  tags,
 }: {
   from: number;
   to: number;
   userId: string;
   authorId?: string;
+  tags?: string[];
 }) {
   const request = supabase
     .from("post")
@@ -22,6 +23,8 @@ export async function fetchPosts({
     .range(from, to);
 
   if (authorId) request.eq("author_id", authorId);
+
+  if (tags) request.contains("tags", [tags]);
 
   const { data, error } = await request;
 

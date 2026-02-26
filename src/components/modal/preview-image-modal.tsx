@@ -16,7 +16,7 @@ export default function PreviewImageModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         {""}
-        <DialogTitle>이미지 미리보기</DialogTitle>
+        <DialogTitle></DialogTitle>
         <div className="flex max-h-[85vh] items-center justify-center">
           <img
             src={imageUrl}

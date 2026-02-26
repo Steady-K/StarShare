@@ -8,11 +8,11 @@ export function useCreatePost(callbacks?: UseMutationCallback) {
   return useMutation({
     mutationFn: createPostWithImages,
 
-    onSuccess: () => {
+    onSuccess: async () => {
       if (callbacks?.onSuccess) callbacks.onSuccess();
 
-      queryClient.resetQueries({
-        queryKey: QUERY_KEYS.post.list,
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.post.all,
       });
     },
     onError: (error) => {
