@@ -12,6 +12,7 @@ type EditMode = {
   postId: number;
   content: string;
   imageUrls: string[] | null;
+  tags: string[] | null;
 };
 
 type OpenState = CreateMode | EditMode;

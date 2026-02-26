@@ -10,6 +10,7 @@ export default function EditPostButton(props: PostEntity) {
       postId: props.id,
       content: props.content,
       imageUrls: props.image_urls,
+      tags: props.tags,
     });
   };
   return (

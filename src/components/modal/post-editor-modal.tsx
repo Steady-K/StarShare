@@ -71,9 +71,11 @@ export default function PostEditorModal() {
     if (postEditorModal.type === "CREATE") {
       setContent("");
       setImages([]);
+      setTags("");
     } else {
       setContent(postEditorModal.content);
       setImages([]);
+      setTags(postEditorModal.tags?.join(", ") ?? "");
     }
 
     textareaRef.current?.focus();
