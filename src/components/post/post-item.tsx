@@ -18,15 +18,20 @@ import LikePostButton from "./like-post-button";
 import { Link } from "react-router";
 import PreviewImageModal from "../modal/preview-image-modal";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 type Image = string | null;
 
 export default function PostItem({
   postId,
   type,
+  selectedTags,
+  onToggleTag,
 }: {
   postId: number;
   type: "FEED" | "DETAIL";
+  selectedTags?: string[];
+  onToggleTag?: (tag: string) => void;
 }) {
   const session = useSession();
   const userId = session?.user.id;
@@ -120,8 +125,12 @@ export default function PostItem({
 
       {/* 3. 좋아요, 댓글 버튼 */}
       <div className="flex flex-col gap-4">
-        <div className="text-muted-foreground">
-          {post.tags?.map((tag) => ` #${tag}`)}
+        <div className="text-muted-foreground flex gap-1">
+          {post.tags?.map((tag) => (
+            <Button className="h-auto w-fit px-2 py-1 text-xs whitespace-nowrap">
+              {tag}
+            </Button>
+          ))}
         </div>
 
         <div className="flex gap-2">
