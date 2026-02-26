@@ -24,7 +24,9 @@ export async function fetchPosts({
 
   if (authorId) request.eq("author_id", authorId);
 
-  if (tags) request.contains("tags", [tags]);
+  if (tags && tags.length > 0) {
+    request.overlaps("tags", tags);
+  }
 
   const { data, error } = await request;
 

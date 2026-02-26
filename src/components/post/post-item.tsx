@@ -127,7 +127,12 @@ export default function PostItem({
       <div className="flex flex-col gap-4">
         <div className="text-muted-foreground flex gap-1">
           {post.tags?.map((tag) => (
-            <Button className="h-auto w-fit px-2 py-1 text-xs whitespace-nowrap">
+            <Button
+              key={tag}
+              type="button"
+              onClick={() => onToggleTag?.(tag)}
+              className="h-auto w-fit px-2 py-1 text-xs whitespace-nowrap"
+            >
               {tag}
             </Button>
           ))}

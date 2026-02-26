@@ -40,14 +40,19 @@ export default function PostFeed({ authorId }: { authorId?: string }) {
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted-foreground">선택된 태그:</span>
           {selectedTags.map((tag) => (
-            <span key={tag} className="rounded-full border px-2 py-1 text-xs">
+            <button
+              key={tag}
+              type="button"
+              onClick={handleClearTags}
+              className="cursor-pointer rounded-full border px-2 py-1 text-xs"
+            >
               #{tag}
-            </span>
+            </button>
           ))}
           <button
             type="button"
             onClick={handleClearTags}
-            className="text-sm underline"
+            className="cursor-pointer text-sm underline"
           >
             전체 해제
           </button>
