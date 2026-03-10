@@ -6,7 +6,7 @@ import ThemeButton from "./header/theme-button";
 export default function GlobalLayout() {
   return (
     <div className="flex min-h-[100vh] flex-col">
-      <header className="h-15 border-b">
+      <header className="bg-background sticky top-0 z-10 h-15 border-b">
         <div className="m-auto flex h-full w-full max-w-175 justify-between px-4">
           <Link to={"/"} className="flex items-center gap-2">
             <img

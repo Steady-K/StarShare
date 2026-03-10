@@ -68,3 +68,13 @@ export async function updatePassword(password: string) {
   if (error) throw error;
   return data;
 }
+
+export async function deleteAccount() {
+  const { data, error } = await supabase.functions.invoke("delete-account", {
+    body: {},
+  });
+  if (error) throw error;
+
+  await supabase.auth.signOut({ scope: "local" });
+  return data;
+}
