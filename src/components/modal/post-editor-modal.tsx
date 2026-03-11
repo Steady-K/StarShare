@@ -10,6 +10,7 @@ import { useSession } from "@/store/session";
 import { useOpenAlertModal } from "@/store/alert-modal";
 import { useUpdatePost } from "@/hooks/mutations/post/use-update-post";
 import { parseTagsInput } from "@/lib/tags";
+import { useGetTags } from "@/hooks/mutations/post/use-get-Tags";
 
 type Image = {
   file: File;
@@ -20,6 +21,8 @@ export default function PostEditorModal() {
   const session = useSession();
   const postEditorModal = usePostEditorModal();
   const openAlertModal = useOpenAlertModal();
+
+  const { mutate: getTags, isPending: isGetTagsPending } = useGetTags();
 
   const { mutate: createPost, isPending: isCreatePostPending } = useCreatePost({
     onSuccess: () => {
@@ -137,7 +140,8 @@ export default function PostEditorModal() {
     URL.revokeObjectURL(image.previewUrl);
   };
 
-  const isPending = isCreatePostPending || isUpdatePostPending;
+  const isPending =
+    isCreatePostPending || isUpdatePostPending || isGetTagsPending;
 
   return (
     <Dialog open={postEditorModal.isOpen} onOpenChange={handleCloseModal}>
@@ -150,6 +154,29 @@ export default function PostEditorModal() {
           className="max-h-125 min-h-25 focus:outline-none"
           placeholder="무슨 일이 있었나요?"
         />
+        {postEditorModal.isOpen &&
+          images.length > 0 &&
+          postEditorModal.type === "CREATE" && (
+            <Button
+              onClick={() =>
+                getTags(images[0].file, {
+                  onSuccess: (suggestedTags) => {
+                    setTags(suggestedTags.join(", ")); // 기존 태그 입력창에 자동 입력
+                  },
+                  onError: () =>
+                    toast.error("태그 생성에 실패했습니다", {
+                      position: "top-center",
+                    }),
+                })
+              }
+              disabled={isGetTagsPending}
+              variant={"outline"}
+              className="cursor-pointer"
+            >
+              {isGetTagsPending ? "분석 중..." : "✨ AI 태그 추천"}
+            </Button>
+          )}
+
         <div className="flex items-center gap-2">
           <div>태그 :</div>
           <input
