@@ -27,6 +27,7 @@ export async function getSuggestedTags(imageFile: File): Promise<string[]> {
               type: "text",
               text: `이 별 사진을 분석해서 SNS 해시태그로 쓸 수 있는 한국어 태그를 5개 추천해줘.
                 - # 기호 없이 태그명만
+                - 별, 천체와 관련 없는 사진이면 사진에 맞는 태그 추천해줘
                 - 쉼표로 구분
                 - 천체 관련 전문 용어 포함
                 - 예시: 은하수, 오리온자리, 별궤적, 겨울밤하늘, 천체사진`,
@@ -38,7 +39,7 @@ export async function getSuggestedTags(imageFile: File): Promise<string[]> {
     }),
   });
   const data = await response.json();
-  console.log(data);
+
   const text = data.choices[0].message.content as string;
 
   return text.split(",").filter((line: string) => line.trim() !== "");

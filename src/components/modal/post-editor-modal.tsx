@@ -1,4 +1,4 @@
-import { ImageIcon, XIcon } from "lucide-react";
+import { ImageIcon, Loader2, XIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { usePostEditorModal } from "@/store/post-editor-modal";
@@ -105,6 +105,7 @@ export default function PostEditorModal() {
   };
 
   const handleCloseModal = () => {
+    if (isPending) return;
     if (content !== "" || images.length !== 0) {
       openAlertModal({
         title: "게시글 작성이 마무리 되지 않았습니다",
@@ -134,6 +135,7 @@ export default function PostEditorModal() {
   };
 
   const handleDeleteImage = (image: Image) => {
+    if (isPending) return;
     setImages((prevImages) =>
       prevImages.filter((item) => item.previewUrl !== image.previewUrl),
     );
@@ -154,38 +156,7 @@ export default function PostEditorModal() {
           className="max-h-125 min-h-25 focus:outline-none"
           placeholder="무슨 일이 있었나요?"
         />
-        {postEditorModal.isOpen &&
-          images.length > 0 &&
-          postEditorModal.type === "CREATE" && (
-            <Button
-              onClick={() =>
-                getTags(images[0].file, {
-                  onSuccess: (suggestedTags) => {
-                    setTags(suggestedTags.join(", ")); // 기존 태그 입력창에 자동 입력
-                  },
-                  onError: () =>
-                    toast.error("태그 생성에 실패했습니다", {
-                      position: "top-center",
-                    }),
-                })
-              }
-              disabled={isGetTagsPending}
-              variant={"outline"}
-              className="cursor-pointer"
-            >
-              {isGetTagsPending ? "분석 중..." : "✨ AI 태그 추천"}
-            </Button>
-          )}
 
-        <div className="flex items-center gap-2">
-          <div>태그 :</div>
-          <input
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            className="flex-1"
-            placeholder="은하수, 별궤적, 오리온자리 ..."
-          />
-        </div>
         <input
           onChange={handleSelectImages}
           ref={fileInputRef}
@@ -214,11 +185,11 @@ export default function PostEditorModal() {
           <Carousel>
             <CarouselContent>
               {images.map((image) => (
-                <CarouselItem className="basis-2/5" key={image.previewUrl}>
+                <CarouselItem className="basis-1/7" key={image.previewUrl}>
                   <div className="relative">
                     <img
                       src={image.previewUrl}
-                      className="h-full w-full rounded-sm object-cover"
+                      className="h-full w-full rounded-sm object-contain"
                     />
                     <div
                       onClick={() => handleDeleteImage(image)}
@@ -232,6 +203,40 @@ export default function PostEditorModal() {
             </CarouselContent>
           </Carousel>
         )}
+
+        <div className="flex items-center gap-2">
+          <div className="text-sm">태그 :</div>
+          <input
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="flex-1"
+            placeholder="은하수, 별궤적, 오리온자리 ..."
+          />
+          {postEditorModal.isOpen && postEditorModal.type === "CREATE" && (
+            <Button
+              onClick={() =>
+                getTags(images[0].file, {
+                  onSuccess: (suggestedTags) => {
+                    setTags(suggestedTags.join(", ")); // 기존 태그 입력창에 자동 입력
+                  },
+                  onError: () =>
+                    toast.error("태그 생성에 실패했습니다", {
+                      position: "top-center",
+                    }),
+                })
+              }
+              disabled={isPending || images.length === 0}
+              variant={"outline"}
+              className="cursor-pointer"
+            >
+              {isGetTagsPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "생성"
+              )}
+            </Button>
+          )}
+        </div>
 
         {postEditorModal.isOpen && postEditorModal.type === "CREATE" && (
           <Button
@@ -252,7 +257,11 @@ export default function PostEditorModal() {
           onClick={handleSavePostClick}
           className="cursor-pointer"
         >
-          저장
+          {isCreatePostPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "저장"
+          )}
         </Button>
       </DialogContent>
     </Dialog>
