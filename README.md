@@ -23,6 +23,7 @@
 | 상태 관리 | Zustand, TanStack Query |
 | 스타일링 | Tailwind CSS, shadcn/ui |
 | Backend / DB | Supabase |
+| AI | OpenAI Vision API |
 | 빌드 도구 | Vite |
 | 배포 | Vercel |
 
@@ -49,9 +50,13 @@
 - 회원가입 시 랜덤 닉네임으로 프로필 자동 생성
 - 프로필 이미지 / 닉네임 / 소개(bio) 수정
 
+### AI
+- 게시글 작성 시 업로드한 별 사진을 OpenAI Vision API로 분석해 관련 해시태그 자동 추천
+
 ### UI/UX
 - 다크 모드 / 라이트 모드 전환
 - 작성 중 모달 이탈 시 경고 다이얼로그
+- 저장 / AI 태그 생성 중 모달 닫힘 및 이미지 삭제 방지
 
 <br />
 
@@ -167,6 +172,15 @@ Zustand에서는 `combine` 미들웨어로 state와 actions를 분리하고, `de
 
 여러 사용자가 동시에 같은 게시글에 좋아요를 누르면, 둘 다 같은 값을 읽고 +1을 저장해 실제로는 1만 증가하는 문제가 발생할 수 있습니다. Supabase JavaScript Client에서는 행 잠금 쿼리(`SELECT ... FOR UPDATE`)를 직접 실행할 수 없기 때문에, DB 내부에서 트랜잭션을 처리하는 RPC 함수(`toggle_post_like`)를 작성했습니다. 클라이언트는 `supabase.rpc()`로 호출만 하면 동시성 제어는 DB에서 보장됩니다.
 
+### OpenAI Vision API — AI 태그 추천 설계 결정
+
+처음에는 문구 추천 기능으로 기획했지만, 실제로 써보니 사용자가 직접 쓰는 것과 차별점이 없었습니다. 별 사진 SNS 특성상 은하수, 별궤적, 오리온자리 같은 전문 용어 태그를 모르는 사용자가 많다는 점에 착안해 **AI 태그 자동 추천**으로 방향을 바꿨습니다.
+
+- 업로드한 이미지를 base64로 변환해 OpenAI Vision API로 전송
+- 사진 분석 결과를 기반으로 관련 태그 5개 자동 생성
+- 태그 입력창 옆에 작은 AI 버튼으로 배치해 흐름을 방해하지 않도록 설계
+- 프로토타입 수준에서는 OpenAI API를 사용하고, 실제 서비스로 확장 시 월 1000건 무료 티어를 제공하는 Cloudflare AI로 교체 가능하도록 API 호출부를 함수로 분리해뒀습니다.
+
 ### Supabase 선택 이유
 
 프론트엔드 개발에 집중하면서도 실제 서비스 수준의 기능이 필요했습니다.
@@ -221,6 +235,17 @@ Supabase Auth는 이메일을 사용자 식별 기준으로 사용합니다. 카
 **해결**  
 카카오 개발자센터에서 비즈앱 전환 후, `account_email`을 필수 동의로 설정하고 Supabase Provider의 scope 필드에 `account_email profile_nickname`을 추가해 해결했습니다.
 
+### 5. OpenAI API 키 GitHub 노출
+
+**문제**  
+`.env` 파일을 `.gitignore`에 추가했음에도 이미 한 번 커밋된 상태라 GitHub push 시 Secret Scanning에 의해 차단됐습니다.
+
+**원인**  
+`.gitignore`는 앞으로의 추적을 막을 뿐, 이미 커밋된 파일은 히스토리에 그대로 남습니다. GitHub은 히스토리 전체를 스캔하기 때문에 이전 커밋에 키가 포함되어 있으면 push가 거부됩니다.
+
+**해결**  
+`git filter-branch`로 전체 커밋 히스토리에서 `.env` 파일을 제거하고 `git push --force`로 강제 push해 해결했습니다. 이후 API 키는 `.env.local`에만 저장하도록 변경했습니다. Vite는 `.env.local`을 기본적으로 `.gitignore`에 포함하기 때문에 동일한 문제가 재발하지 않습니다.
+
 <br />
 
 ## 💭 개선하고 싶은 점
@@ -228,25 +253,6 @@ Supabase Auth는 이메일을 사용자 식별 기준으로 사용합니다. 카
 - **이미지 최적화**: 별 사진 특성상 고해상도 이미지가 많아 업로드 전 canvas를 이용한 리사이징 또는 WebP 변환 처리를 추가하고 싶습니다.
 - **접근성(a11y) 개선**: 다크모드 대비 비율, 키보드 네비게이션 등을 보완하고 싶습니다.
 - **실시간 알림**: Supabase의 `channel().on('postgres_changes')` 기능을 활용해 좋아요/댓글 알림을 실시간으로 받을 수 있도록 확장하고 싶습니다.
-
-<br />
-
-## 🚀 로컬 실행 방법
-
-```bash
-# 저장소 클론
-git clone https://github.com/[username]/[repo-name].git
-
-# 의존성 설치
-npm install
-
-# 환경 변수 설정 (.env.local)
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# 개발 서버 실행
-npm run dev
-```
 
 <br />
 
